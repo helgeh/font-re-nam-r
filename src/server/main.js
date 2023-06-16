@@ -21,6 +21,7 @@ app.use((err, req, res, next) => {
     next(err)
 })
 
+ViteExpress.config({ inlineViteConfig: 'vite.config.js' })
 
 ViteExpress.listen(app, port, () =>
   console.log(`Server is listening on port ${port}...`)
