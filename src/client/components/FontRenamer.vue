@@ -54,6 +54,7 @@
       </v-btn>
     </div>
   </form>
+  <a href="#" ref="anchor"></a>
 </template>
 
 <script setup>
@@ -71,23 +72,35 @@ import { ref } from 'vue'
 
   const alert = ref('')
 
+  const anchor = ref(null)
+
   const submit = (event) => {
     closeAlert()
     const data = new FormData(event.target)
     axios({
       url: '/upload', 
       method: 'post', 
-      responseType: 'blob', 
       data
     })
       .then(response => {
-        const href = window.URL.createObjectURL(response.data)
-        window.location.assign(href)
+        if (response && response.data.downloadUrl) {
+          anchor.value.setAttribute('href', response.data.downloadUrl)
+          anchor.value.click()
+        }
       })
       .catch(err => {
         let msg = ''
-        if (err && err.response && err.response.data)
-          msg = err.response.data + ' '
+        if (err && err.response) {
+          if (err.response.data instanceof Blob) {
+            var reader = new FileReader()
+            reader.onload = function() {
+                console.log(reader.result)
+            }
+            reader.readAsText(err.response.data)
+          }
+          else
+            msg = err.response.data + ' '
+        }
         msg += 'Prøv igjen eller hør med Helge hva som kan være feil...'
         alert.value = msg
       })
