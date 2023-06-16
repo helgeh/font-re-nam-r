@@ -11,31 +11,26 @@ const upload = multer({ dest: 'uploads/' })
 
 
 function callFontnameScript(cmd) {
-    // return Promise.resolve()
     return exec(cmd)
         .then(function (result) {
-                var stdout = result.stdout;
-                var stderr = result.stderr;
-                console.log('NOE GIKK FEIL!', stderr)
-                // if (stderr)
-                //     return Promise.reject('FontTools-skriptet har feilet.')
-            })
-        // .catch(function (err) {
-        //         console.error('ERROR: ', err)
-        //             return Promise.reject('FontTools-skriptet har feilet.')
-        //     })
+            var stdout = result.stdout;
+            var stderr = result.stderr;
+            if (stderr)
+                return Promise.reject('FontTools-skriptet har feilet.')
+        })
+        .catch(function (err) {
+            return Promise.reject('FontTools-skriptet har feilet.')
+        })
 }
 
 function zipFiles(files, outPath) {
-    // return Promise.resolve()
     const archive = archiver('zip', { zlib: { level: 9 }})
     const stream = createWriteStream(outPath)
   
     return new Promise((resolve, reject) => {
         archive
             .on('error', err => {
-                // reject(err)
-                reject('zipppppp')
+                reject('Zipping av filene feilet.')
             })
             .pipe(stream)
   
@@ -44,12 +39,12 @@ function zipFiles(files, outPath) {
             archive.append(createReadStream(file1), { name: files[i].originalname })
         }
 
-        stream.on('error', () => reject())
+        stream.on('error', () => reject('Feil i mappe- eller filstruktur.'))
         stream.on('close', () => resolve())
         archive.finalize()
     })
 }
-  
+
 const router = express.Router()
 
 router.get('/api/v1/hello', (_, res) => {
@@ -74,8 +69,7 @@ router.post('/upload', upload.array('fonts', 32), function (req, res, next) {
             return zipFiles(toZip, newZipFile)
                 .then(_ => res.download(newZipFile))
                 .catch(err => {
-                    console.log('zipping feilet')
-                    return Promise.reject('Zipping av filene feilet')
+                    return Promise.reject('Zipping av filene feilet.')
                 })
         })
         .catch(err => {

@@ -74,13 +74,22 @@ import { ref } from 'vue'
   const submit = (event) => {
     closeAlert()
     const data = new FormData(event.target)
-    console.log(event)
-    axios.post('/upload', data)
+    axios({
+      url: '/upload', 
+      method: 'post', 
+      responseType: 'blob', 
+      data
+    })
       .then(response => {
-        console.log('yey')
+        const href = window.URL.createObjectURL(response.data)
+        window.location.assign(href)
       })
       .catch(err => {
-        alert.value = 'Noe gikk desverre feil under navnendring av fontene. ' + err.response.data
+        let msg = ''
+        if (err && err.response && err.response.data)
+          msg = err.response.data + ' '
+        msg += 'Prøv igjen eller hør med Helge hva som kan være feil...'
+        alert.value = msg
       })
   }
 
