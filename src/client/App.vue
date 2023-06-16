@@ -9,7 +9,7 @@ import FontRenamer from "./components/FontRenamer.vue";
     max-width="600"
     rounded="lg"
     width="100%"
-    class="pa-4 text-center mx-auto"
+    class="pa-4 mx-auto"
   >
 
 

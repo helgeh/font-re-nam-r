@@ -18,9 +18,11 @@ function callFontnameScript(cmd) {
                 var stderr = result.stderr;
                 console.log('NOE GIKK FEIL!', stderr)
                 // if (stderr)
+                //     return Promise.reject('FontTools-skriptet har feilet.')
             })
         // .catch(function (err) {
         //         console.error('ERROR: ', err)
+        //             return Promise.reject('FontTools-skriptet har feilet.')
         //     })
 }
 
@@ -31,7 +33,10 @@ function zipFiles(files, outPath) {
   
     return new Promise((resolve, reject) => {
         archive
-            .on('error', err => reject(err))
+            .on('error', err => {
+                // reject(err)
+                reject('zipppppp')
+            })
             .pipe(stream)
   
         for (var i = 0; i < files.length; i++) {
@@ -39,6 +44,7 @@ function zipFiles(files, outPath) {
             archive.append(createReadStream(file1), { name: files[i].originalname })
         }
 
+        stream.on('error', () => reject())
         stream.on('close', () => resolve())
         archive.finalize()
     })
@@ -54,8 +60,10 @@ router.post('/upload', upload.array('fonts', 32), function (req, res, next) {
     const nyttnavn = req.body.nyttnavn
     let cmd = 'python3 fontname.py ' + nyttnavn
     let toZip = []
-    if (req.files.length < 1 || nyttnavn.length < 1)
-        res.end('No files or new name provided')
+    if (req.files.length < 1 || nyttnavn.length < 1) {
+        res.status(400).send('Filer eller filnavn mangler.')
+        return
+    }
     req.files.forEach(file => {
         toZip.push(file)
         cmd += ' ' + file.path
@@ -65,9 +73,13 @@ router.post('/upload', upload.array('fonts', 32), function (req, res, next) {
             const newZipFile = path.join(path.resolve(), 'public', 'zips', nyttnavn + '.zip');
             return zipFiles(toZip, newZipFile)
                 .then(_ => res.download(newZipFile))
+                .catch(err => {
+                    console.log('zipping feilet')
+                    return Promise.reject('Zipping av filene feilet')
+                })
         })
         .catch(err => {
-            res.err('Something went wrong converting the font names', err)
+            res.status(500).send(err)
         })
     // TODO cleanup the uploads!
 })

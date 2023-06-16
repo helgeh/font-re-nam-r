@@ -14,6 +14,13 @@ app.get("/hello", (req, res) => {
   res.send("Hello Vite + Vue!")
 })
 
+app.use((err, req, res, next) => {
+  if (req.xhr)
+    res.status(500).send({error: 'Something feila'})
+  else
+    next(err)
+})
+
 
 ViteExpress.listen(app, port, () =>
   console.log(`Server is listening on port ${port}...`)
