@@ -9,6 +9,7 @@
   >
 
     <div class="text-center">
+
       <v-icon
         class="mb-5"
         color="success"
@@ -17,6 +18,7 @@
       ></v-icon>
 
       <h1 class="mb-4">FontReNamR</h1>
+
     </div>
 
     <v-divider class="mb-4"></v-divider>
@@ -24,32 +26,12 @@
     <form action="/upload" method="post" enctype="multipart/form-data" @submit.prevent="submit($event)">
 
       <p class="mb-4">
-          
         <v-file-input label="last opp filer" name="fonts" id="fonts" multiple variant="underlined"></v-file-input>
-
         <br>
-
-          <v-text-field label="velg nytt navn" id="nyttnavn" name="nyttnavn" variant="underlined"></v-text-field>
+        <v-text-field label="velg nytt navn" id="nyttnavn" name="nyttnavn" variant="underlined"></v-text-field>
       </p>
 
       <v-divider class="mb-4"></v-divider>
-
-      <v-alert 
-        variant="outlined"
-        color="warning"
-        icon="$warning"
-        class="mb-4"
-        title="Åh nei!"
-        v-if="alert != ''"
-        closable
-      >
-        <span v-html="alert"></span>
-        <template v-slot:close="{ toggle }">
-          <v-btn @click="closeAlert(toggle)">
-            <v-icon icon="mdi-close" color="warning"></v-icon>
-          </v-btn>
-        </template>
-      </v-alert>
 
       <div class="text-end">
         <v-btn
@@ -61,8 +43,27 @@
           <v-icon icon="mdi-transfer-down" size="32"></v-icon>
         </v-btn>
       </div>
+
     </form>
+
     <a href="#" ref="anchor"></a>
+
+    <v-alert 
+      variant="outlined"
+      color="warning"
+      icon="$warning"
+      class="mt-4"
+      title="Åh nei!"
+      v-if="alert != ''"
+      closable
+    >
+      <span v-html="alert"></span>
+      <template v-slot:close="{ toggle }">
+        <v-btn @click="closeAlert(toggle)">
+          <v-icon icon="mdi-close" color="warning"></v-icon>
+        </v-btn>
+      </template>
+    </v-alert>
 
   </v-sheet>
 
@@ -83,13 +84,44 @@
       >
         <v-list-item-title v-text="item.text"></v-list-item-title>
         <template v-slot:append>
-          <!-- <v-btn rounded="xl" size="small" color="deep-orange-lighten-1" variant="outlined" class="ms-2" @click.stop="onClickRemoveZip(i)">
+          <v-btn rounded="xl" size="small" color="deep-orange-lighten-1" variant="outlined" class="ms-2" @click.stop="onClickRemoveZip(i)">
             <v-icon icon="mdi-close"></v-icon>
-          </v-btn> -->
+          </v-btn>
         </template>
       </v-list-item>
     </v-list>
   </v-card>
+
+  <v-dialog
+    v-model="removeDialog"
+    width="auto"
+    persistent
+  >
+    <v-card>
+      <v-card-title class="text-h5">
+        Slette
+      </v-card-title>
+      <v-card-text>Slette filen <strong>{{ zipToRemove.replace('/zips/', '') }}</strong>?</v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="green-darken-1"
+          variant="text"
+          @click="onRemoveCancel"
+        >
+          Nei fader jeg trykte feil!
+        </v-btn>
+        <v-btn
+          color="red-darken-1"
+          variant="text"
+          @click="onRemoveConfirm"
+        >
+          Yup, slett!
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
 </template>
 
 <script setup>
@@ -101,6 +133,8 @@
   const zipItems = ref([])
   const zipList = ref(null)
   const selected = ref([])
+  const removeDialog = ref(false)
+  const zipToRemove = ref('')
 
 
   // event handlers ----------------------------------------
@@ -120,9 +154,7 @@
         }
         fetchZips()
       })
-      .catch(err => {
-        showError(err)
-      })
+      .catch(showError)
   }
 
   const closeAlert = () => {
@@ -136,15 +168,14 @@
   }
 
   const onClickZip = (index) => {
-    // selectedIndex = index
     const item = zipItems.value[index]
     downloadZip(item.value)
   }
 
-  // const onClickRemoveZip = (index) => {
-  //   const item = zipItems.value[index]
-  //   removeZip(item)
-  // }
+  const onClickRemoveZip = (index) => {
+    const item = zipItems.value[index]
+    removeZip(item)
+  }
 
 
   // helper functions --------------------------------------
@@ -168,21 +199,42 @@
   }
 
   function downloadZip(url) {
-    // console.log(`download: ${url}`)
     anchor.value.setAttribute('href', url)
     anchor.value.click()
   }
 
-  // function removeZip(item) {
-  //   // console.log('slett: ' + item.value)
-  //   zipItems.value = zipItems.value.filter(itm => itm.value !== item.value)
-  // }
+  function removeZip(item) {
+    zipToRemove.value = item.value
+    removeDialog.value = true
+  }
+
+  function onRemoveConfirm() {
+    removeDialog.value = false
+    axios({
+      url: '/removeZip', 
+      method: 'get', 
+      params: {
+        zipName: zipToRemove.value.replace('/zips/', '').replace('.zip', '')
+      }
+    })
+      .then(response => {
+        if (response && response.data.ok) {
+          zipItems.value = zipItems.value.filter(itm => itm.value !== zipToRemove.value)
+        }
+      })
+      .catch(showError)
+  }
+
+  function onRemoveCancel() {
+    removeDialog.value = false
+    zipToRemove.value = ''
+  }
 
   function showError(err) {
     let msg = ''
     if (err && err.response) {
       if (err.response.data instanceof Blob) {
-        var reader = new FileReader()
+        const reader = new FileReader()
         reader.onload = function() {
             console.log(reader.result)
         }

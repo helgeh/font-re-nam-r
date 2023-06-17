@@ -70,4 +70,25 @@ router.get('/ziplist', function (req, res, next) {
         })
 })
 
+router.get('/removeZip', function (req, res, next) {
+    const z = path.join(path.resolve(), 'public', 'zips')
+    let result = false
+    fs.readdir(z)
+        .then(files => {
+            files.forEach(file => {
+                const reg = /.zip$/
+                if (!result && reg.test(file)) {
+                    // if (file.replace(reg, '') === req.query.zipName) {
+                    //     fs.unlink(path.join(z, file))
+                    //     result = true
+                    // }
+                }
+            })
+            if (!result)
+                res.status(500).send('Fant ikke filen')
+            else
+                res.json({ ok: result })
+        })
+})
+
 export default router
