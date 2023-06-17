@@ -4,18 +4,10 @@ import FontRenamer from "./components/FontRenamer.vue";
 
 <template>
   
-  <v-sheet
-    elevation="12"
-    max-width="600"
-    rounded="lg"
-    width="100%"
-    class="pa-4 mx-auto"
-  >
 
 
             <FontRenamer />
 
-  </v-sheet>
 
 </template>
 

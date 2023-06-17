@@ -1,78 +1,110 @@
 <template>
 
-  <div class="text-center">
-    <v-icon
-      class="mb-5"
-      color="success"
-      icon="mdi-archive-edit-outline"
-      size="112"
-    ></v-icon>
+  <v-sheet
+    elevation="12"
+    max-width="600"
+    rounded="lg"
+    width="100%"
+    class="pa-4 mx-auto"
+  >
 
-    <h1 class="mb-4">FontReNamR</h1>
-  </div>
+    <div class="text-center">
+      <v-icon
+        class="mb-5"
+        color="success"
+        icon="mdi-archive-edit-outline"
+        size="112"
+      ></v-icon>
 
-  <v-divider class="mb-4"></v-divider>
-
-  <form action="/upload" method="post" enctype="multipart/form-data" @submit.prevent="submit($event)">
-
-    <p class="mb-4">
-        
-      <v-file-input label="last opp filer" name="fonts" id="fonts" multiple variant="underlined"></v-file-input>
-
-      <br>
-
-        <v-text-field label="velg nytt navn" id="nyttnavn" name="nyttnavn" variant="underlined"></v-text-field>
-    </p>
+      <h1 class="mb-4">FontReNamR</h1>
+    </div>
 
     <v-divider class="mb-4"></v-divider>
 
-    <v-alert 
-      variant="outlined"
-      color="warning"
-      icon="$warning"
-      class="mb-4"
-      title="Åh nei!"
-      v-if="alert != ''"
-      closable
-    >
-      <span v-html="alert"></span>
-      <template v-slot:close="{ toggle }">
-        <v-btn @click="closeAlert(toggle)">
-          <v-icon icon="mdi-close" color="warning"></v-icon>
-        </v-btn>
-      </template>
-    </v-alert>
+    <form action="/upload" method="post" enctype="multipart/form-data" @submit.prevent="submit($event)">
 
-    <div class="text-end">
-      <v-btn
+      <p class="mb-4">
+          
+        <v-file-input label="last opp filer" name="fonts" id="fonts" multiple variant="underlined"></v-file-input>
+
+        <br>
+
+          <v-text-field label="velg nytt navn" id="nyttnavn" name="nyttnavn" variant="underlined"></v-text-field>
+      </p>
+
+      <v-divider class="mb-4"></v-divider>
+
+      <v-alert 
         variant="outlined"
-        width="120"
-        height="40"
-        type="submit"
+        color="warning"
+        icon="$warning"
+        class="mb-4"
+        title="Åh nei!"
+        v-if="alert != ''"
+        closable
       >
-        <v-icon icon="mdi-transfer-down" size="32"></v-icon>
-      </v-btn>
-    </div>
-  </form>
-  <a href="#" ref="anchor"></a>
+        <span v-html="alert"></span>
+        <template v-slot:close="{ toggle }">
+          <v-btn @click="closeAlert(toggle)">
+            <v-icon icon="mdi-close" color="warning"></v-icon>
+          </v-btn>
+        </template>
+      </v-alert>
+
+      <div class="text-end">
+        <v-btn
+          variant="outlined"
+          width="120"
+          height="40"
+          type="submit"
+        >
+          <v-icon icon="mdi-transfer-down" size="32"></v-icon>
+        </v-btn>
+      </div>
+    </form>
+    <a href="#" ref="anchor"></a>
+
+  </v-sheet>
+
+  <v-card
+    class="mx-auto mt-8"
+    max-width="400"
+    rounded="lg"
+    elevation="11"
+  >
+    <v-list density="compact" @click:select="onClickSelectVList" v-model:selected="selected" ref="zipList">
+      <v-list-item
+        v-for="(item, i) in zipItems"
+        :key="i"
+        :value="item"
+        color="primary"
+        select-strategy="classic"
+        @click="onClickZip(i)"
+      >
+        <v-list-item-title v-text="item.text"></v-list-item-title>
+        <template v-slot:append>
+          <!-- <v-btn rounded="xl" size="small" color="deep-orange-lighten-1" variant="outlined" class="ms-2" @click.stop="onClickRemoveZip(i)">
+            <v-icon icon="mdi-close"></v-icon>
+          </v-btn> -->
+        </template>
+      </v-list-item>
+    </v-list>
+  </v-card>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-// const hello = ref({})
-
-// fetch('/api/v1/hello')
-//   .then(r => r.json())
-//   .then(({message}) => {
-//     hello.value = message
-//   })
-
+  import { ref, watch } from 'vue'
   import axios from 'axios'
 
   const alert = ref('')
-
   const anchor = ref(null)
+  const zipItems = ref([])
+  const zipList = ref(null)
+  const selected = ref([])
+
+
+  // event handlers ----------------------------------------
+
 
   const submit = (event) => {
     closeAlert()
@@ -84,25 +116,12 @@ import { ref } from 'vue'
     })
       .then(response => {
         if (response && response.data.downloadUrl) {
-          anchor.value.setAttribute('href', response.data.downloadUrl)
-          anchor.value.click()
+          downloadZip(response.data.downloadUrl)
         }
+        fetchZips()
       })
       .catch(err => {
-        let msg = ''
-        if (err && err.response) {
-          if (err.response.data instanceof Blob) {
-            var reader = new FileReader()
-            reader.onload = function() {
-                console.log(reader.result)
-            }
-            reader.readAsText(err.response.data)
-          }
-          else
-            msg = err.response.data + '<br />'
-        }
-        msg += 'Prøv igjen eller hør med Helge hva som kan være feil...'
-        alert.value = msg
+        showError(err)
       })
   }
 
@@ -110,8 +129,91 @@ import { ref } from 'vue'
     alert.value = ''
   }
 
+  const onClickSelectVList = (val) => {
+    // if (!val.value)
+    //   return
+    // console.log('onClickSelectVList', val.id.value)
+  }
+
+  const onClickZip = (index) => {
+    // selectedIndex = index
+    const item = zipItems.value[index]
+    downloadZip(item.value)
+  }
+
+  // const onClickRemoveZip = (index) => {
+  //   const item = zipItems.value[index]
+  //   removeZip(item)
+  // }
+
+
+  // helper functions --------------------------------------
+
+
+  // get list of zips
+  function fetchZips(argument) {
+    fetch('/ziplist')
+      .then(res => {
+        res.json().then(json => {
+          // console.log(json)
+          zipItems.value = json.files.map(file => {
+            return {
+              key: Date.now(),
+              text: file.fileName,
+              value: file.path
+            }
+          })
+        })
+      })
+  }
+
+  function downloadZip(url) {
+    // console.log(`download: ${url}`)
+    anchor.value.setAttribute('href', url)
+    anchor.value.click()
+  }
+
+  // function removeZip(item) {
+  //   // console.log('slett: ' + item.value)
+  //   zipItems.value = zipItems.value.filter(itm => itm.value !== item.value)
+  // }
+
+  function showError(err) {
+    let msg = ''
+    if (err && err.response) {
+      if (err.response.data instanceof Blob) {
+        var reader = new FileReader()
+        reader.onload = function() {
+            console.log(reader.result)
+        }
+        reader.readAsText(err.response.data)
+      }
+      else
+        msg = err.response.data + '<br />'
+    }
+    msg += 'Prøv igjen eller hør med Helge hva som kan være feil...'
+    alert.value = msg
+  }
+
+
+  // initialize --------------------------------------------
+
+
+  fetchZips()
+
+  // watch the <selected> array and de-select everything always
+  watch(selected, async (cur, old) => {
+    if (cur.length > 0) {
+      zipList.value.select(zipItems.value.indexOf(cur[0], false))
+    }
+  })
+
+
 </script>
 
 
 <style scoped>
+  .v-btn--size-small {
+    min-width: 40px;
+  }
 </style>

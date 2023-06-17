@@ -15,7 +15,7 @@ const cleanUploads = () => {
     fs.readdir(p)
         .then(files => {
             files.forEach(file => {
-                console.log(file)
+                // console.log(file)
                 if (file !== '.gitignore')
                     fs.unlink(path.join(p, file))
             })
@@ -49,6 +49,24 @@ router.post('/upload', upload.array('fonts', 32), function (req, res, next) {
         })
         .catch(err => {
             res.status(500).send(err)
+        })
+})
+
+router.get('/ziplist', function (req, res, next) {
+    const z = path.join(path.resolve(), 'public', 'zips')
+    const result = []
+    fs.readdir(z)
+        .then(files => {
+            files.forEach(file => {
+                const reg = /.zip$/
+                if (reg.test(file)) {
+                    result.push({
+                        path: path.join('/zips', file),
+                        fileName: file
+                    })
+                }
+            })
+            res.json({ files: result })
         })
 })
 
