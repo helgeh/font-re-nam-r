@@ -159,6 +159,7 @@
         if (response && response.data.downloadUrl) {
           downloadZip(response.data.downloadUrl)
         }
+        form.value.reset()
         fetchZips()
       })
       .catch(showError)
