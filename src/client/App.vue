@@ -3,12 +3,7 @@ import FontRenamer from "./components/FontRenamer.vue";
 </script>
 
 <template>
-  
-
-
-            <FontRenamer />
-
-
+  <FontRenamer />
 </template>
 
 <style scoped>

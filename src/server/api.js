@@ -78,10 +78,10 @@ router.get('/removeZip', function (req, res, next) {
             files.forEach(file => {
                 const reg = /.zip$/
                 if (!result && reg.test(file)) {
-                    // if (file.replace(reg, '') === req.query.zipName) {
-                    //     fs.unlink(path.join(z, file))
-                    //     result = true
-                    // }
+                    if (file.replace(reg, '') === req.query.zipName) {
+                        fs.unlink(path.join(z, file))
+                        result = true
+                    }
                 }
             })
             if (!result)
