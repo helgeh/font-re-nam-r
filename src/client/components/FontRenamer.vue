@@ -23,12 +23,12 @@
 
     <v-divider class="mb-4"></v-divider>
 
-    <form action="/upload" method="post" enctype="multipart/form-data" @submit.prevent="submit($event)">
+    <v-form action="/upload" method="post" enctype="multipart/form-data" @submit.prevent="submit($event)" ref="form">
 
       <p class="mb-4">
-        <v-file-input label="last opp filer" name="fonts" id="fonts" multiple variant="underlined"></v-file-input>
+        <v-file-input :rules="fileRules" label="last opp filer" name="fonts" id="fonts" multiple variant="underlined"></v-file-input>
         <br>
-        <v-text-field label="velg nytt navn" id="nyttnavn" name="nyttnavn" variant="underlined"></v-text-field>
+        <v-text-field :rules="textRules" label="velg nytt navn" id="nyttnavn" name="nyttnavn" variant="underlined"></v-text-field>
       </p>
 
       <v-divider class="mb-4"></v-divider>
@@ -44,7 +44,7 @@
         </v-btn>
       </div>
 
-    </form>
+    </v-form>
 
     <a href="#" ref="anchor"></a>
 
@@ -135,13 +135,19 @@
   const selected = ref([])
   const removeDialog = ref(false)
   const zipToRemove = ref('')
+  const form = ref(null)
+  const fileRules = ref([value => value.length > 0 && value[0] instanceof File || 'vennligst velg fil(er)'])
+  const textRules = ref([value => value && value.length > 0 || 'vennligst velg nytt navn'])
 
 
   // event handlers ----------------------------------------
 
 
-  const submit = (event) => {
+  const submit = async (event) => {
     closeAlert()
+    const { valid } = await form.value.validate()
+    if (!valid)
+      return
     const data = new FormData(event.target)
     axios({
       url: '/upload', 
