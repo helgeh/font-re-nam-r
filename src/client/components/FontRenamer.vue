@@ -72,6 +72,7 @@
     max-width="400"
     rounded="lg"
     elevation="11"
+    v-if="zipItems.length > 0"
   >
     <v-list density="compact" @click:select="onClickSelectVList" v-model:selected="selected" ref="zipList">
       <v-list-item
