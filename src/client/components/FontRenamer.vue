@@ -137,7 +137,7 @@
   const removeDialog = ref(false)
   const zipToRemove = ref('')
   const form = ref(null)
-  const fileRules = ref([value => value.length > 0 && value[0] instanceof File || 'vennligst velg fil(er)'])
+  const fileRules = ref([value => value && value.length > 0 && value[0] instanceof File || 'vennligst velg fil(er)'])
   const textRules = ref([value => value && value.length > 0 || 'vennligst velg nytt navn'])
 
 

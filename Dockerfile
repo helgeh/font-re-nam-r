@@ -8,6 +8,10 @@ RUN npm install --quiet
 
 COPY . .
 
+RUN chown node ./uploads
+
+RUN chown -R node ./public
+
 EXPOSE 3003
 
 RUN npm run build
