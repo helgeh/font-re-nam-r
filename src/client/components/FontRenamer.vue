@@ -27,7 +27,6 @@
     <v-divider class="mb-4"></v-divider>
 
     <v-alert 
-      :text="alert"
       variant="outlined"
       color="warning"
       icon="$warning"
@@ -36,6 +35,7 @@
       v-if="alert != ''"
       closable
     >
+      <span v-html="alert"></span>
       <template v-slot:close="{ toggle }">
         <v-btn @click="closeAlert(toggle)">
           <v-icon icon="mdi-close" color="warning"></v-icon>
@@ -99,7 +99,7 @@ import { ref } from 'vue'
             reader.readAsText(err.response.data)
           }
           else
-            msg = err.response.data + ' '
+            msg = err.response.data + '<br />'
         }
         msg += 'Prøv igjen eller hør med Helge hva som kan være feil...'
         alert.value = msg
