@@ -1,7 +1,7 @@
 {
   "name": "font-re-nam-r",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "nodemon src/server/main.js -w src/server -w src/lib",
