@@ -8,7 +8,7 @@
     class="pa-4 mx-auto"
   >
 
-    <my-header title="FontReNamR"></my-header>
+    <my-header heading="FontReNamR" :version="version"></my-header>
 
     <my-form 
       ref="form"
@@ -48,6 +48,8 @@
 <script setup>
 
   import { ref, inject } from 'vue'
+  
+  const version = __APP_VERSION__ // defined in vite.config.js
 
   const service = inject('service')
   const alert = ref(null)

@@ -9,7 +9,7 @@
       size="112"
     ></v-icon>
 
-    <h1 class="mb-4">{{ title }}</h1>
+    <h1 class="mb-4" :title="version">{{ heading }}</h1>
 
   </div>
 
@@ -17,6 +17,6 @@
 
 <script setup>
 
-  defineProps(['title'])
+  defineProps(['heading', 'version'])
   
 </script>
