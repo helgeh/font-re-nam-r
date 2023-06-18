@@ -6,19 +6,11 @@ import ViteExpress from 'vite-express'
 import api from './api.js'
 
 const port = process.env.PORT || 3003
-
 const publicPath = path.join(path.resolve(), 'public')
-
 const app = express()
 
 app.use(api)
-
 app.use('/', express.static(publicPath))
-
-// app.get("/hello", (req, res) => {
-//   res.send("Hello Vite + Vue!")
-// })
-
 app.use((err, req, res, next) => {
   if (req.xhr)
     res.status(500).send({error: 'Something feila'})
