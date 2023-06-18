@@ -1,6 +1,3 @@
-<script setup>
-import FontRenamer from "./components/FontRenamer.vue";
-</script>
 
 <template>
   <FontRenamer />

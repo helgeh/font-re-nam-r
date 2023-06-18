@@ -1,6 +1,7 @@
 
 import axios from 'axios'
 
+import FontRenamer from "../components/FontRenamer.vue";
 import MyHeader from '../components/MyHeader.vue'
 import MyForm from '../components/MyForm.vue'
 import MyZipList from '../components/MyZipList.vue'
@@ -11,6 +12,7 @@ import MyPrompt from '../components/MyPrompt.vue'
 export default {
   install(app, options) {
     app
+    	.component('FontRenamer', FontRenamer)
     	.component('MyHeader', MyHeader)
 			.component('MyForm', MyForm)
 			.component('MyZipList', MyZipList)
