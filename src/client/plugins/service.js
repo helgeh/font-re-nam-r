@@ -7,6 +7,7 @@ import MyForm from '../components/MyForm.vue'
 import MyZipList from '../components/MyZipList.vue'
 import MyAlert from '../components/MyAlert.vue'
 import MyPrompt from '../components/MyPrompt.vue'
+import CatSvg from '../components/CatSvg.vue'
 
 
 export default {
@@ -18,6 +19,7 @@ export default {
 			.component('MyZipList', MyZipList)
 			.component('MyAlert', MyAlert)
 			.component('MyPrompt', MyPrompt)
+			.component('CatSvg', CatSvg)
 
 		app.provide('service', {
 			

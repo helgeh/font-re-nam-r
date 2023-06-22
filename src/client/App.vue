@@ -1,6 +1,11 @@
 
 <template>
   <FontRenamer />
+  <CatSvg />
+
+  <!-- 
+    <img src="./assets/cat.svg" class="" alt="Cat tax" />
+  -->
 </template>
 
 <style scoped>
