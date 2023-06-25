@@ -39,11 +39,7 @@
   import { ref } from 'vue'
 
   const props = defineProps(['cancelText', 'confirmText', 'title'])
-
   const emit = defineEmits(['cancel', 'confirm'])
-
-  const fileName = ref('')
-
   const show = ref(false)
 
   function cancel() {
@@ -55,8 +51,7 @@
   }
 
   defineExpose({
-    ask(file) {
-      fileName.value = file
+    show() {
       show.value = true
     },
     hide() {

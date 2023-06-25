@@ -13,13 +13,15 @@
     <my-form 
       ref="form"
       fileLabel="trykk her for å velge font-fil(er)"
+      fileErrorLabel="vennligst velg fil(er)"
       nameLabel="trykk her for å skrive nytt navn"
+      nameErrorLabel="vennligst skriv nytt navn"
       @submitted="onSubmit"
     ></my-form>
  
     <a href="#" ref="anchor"></a>
 
-    <my-alert ref="alert" @onClose="closeAlert">
+    <my-alert ref="alert" @onClose="closeAlert" title="Åh nei!">
       <p>{{ alertMessage }}</p>
       <p>Prøv igjen eller hør med Helge hva som kan være feil...</p>
     </my-alert>
@@ -85,7 +87,7 @@
 
   function removeZip(item) {
     zipToRemove.value = item
-    removePrompt.value.ask(zipToRemove.value.replace('/zips/', ''))
+    removePrompt.value.show()
   }
 
   function onRemoveConfirm() {

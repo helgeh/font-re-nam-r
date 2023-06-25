@@ -46,8 +46,8 @@
 
   import { ref } from 'vue'
 
-  const fileRules = ref([value => value && value.length > 0 && value[0] instanceof File || 'vennligst velg fil(er)'])
-  const textRules = ref([value => value && value.length > 0 || 'vennligst skriv nytt navn'])
+  const fileRules = ref([value => value && value.length > 0 && value[0] instanceof File || props.fileErrorLabel])
+  const textRules = ref([value => value && value.length > 0 || props.nameErrorLabel])
   const props = defineProps(['fileLabel', 'nameLabel'])
   const emit = defineEmits(['submitted'])
   const form = ref(null)

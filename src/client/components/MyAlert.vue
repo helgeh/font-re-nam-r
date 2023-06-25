@@ -5,7 +5,7 @@
       color="warning"
       icon="$warning"
       class="mt-4"
-      title="Åh nei!"
+      :title="props.title"
       v-if="alert === 'open'"
       closable
     >
@@ -23,8 +23,8 @@
 
   import { ref } from 'vue'
 
+  const props = defineProps(['title'])
   const emit = defineEmits(['onClose'])
-  
   const alert = ref('')
 
   function closeAlert() {
