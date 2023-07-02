@@ -7,11 +7,13 @@
     elevation="11"
     v-if="zipItems.length > 0"
   >
+
     <v-list 
       density="compact" 
       v-model:selected="selected" 
       ref="zipList"
     >
+
       <v-list-item
         v-for="(item, i) in zipItems"
         :key="i"
@@ -20,7 +22,9 @@
         select-strategy="classic"
         @click="onClickZip(i)"
       >
+
         <v-list-item-title v-text="item.text"></v-list-item-title>
+
         <template v-slot:append>
           <v-btn 
             rounded="xl" 
@@ -33,8 +37,11 @@
             <v-icon icon="mdi-close"></v-icon>
           </v-btn>
         </template>
+
       </v-list-item>
+
     </v-list>
+    
   </v-card>
 
 </template>

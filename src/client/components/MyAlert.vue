@@ -9,12 +9,15 @@
       v-if="alert === 'open'"
       closable
     >
+
       <slot />
+
       <template v-slot:close="{ toggle }">
         <v-btn @click="closeAlert(toggle)">
           <v-icon icon="mdi-close" color="warning"></v-icon>
         </v-btn>
       </template>
+      
     </v-alert>
 
 </template>

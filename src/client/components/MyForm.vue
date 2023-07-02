@@ -34,11 +34,11 @@
         height="40"
         type="submit"
       >
-      <v-icon icon="mdi-transfer-down" size="32"></v-icon>
-    </v-btn>
-  </div>
+        <v-icon icon="mdi-transfer-down" size="32"></v-icon>
+      </v-btn>
+    </div>
 
-</v-form>
+  </v-form>
 
 </template>
 
@@ -48,7 +48,7 @@
 
   const fileRules = ref([value => value && value.length > 0 && value[0] instanceof File || props.fileErrorLabel])
   const textRules = ref([value => value && value.length > 0 || props.nameErrorLabel])
-  const props = defineProps(['fileLabel', 'nameLabel'])
+  const props = defineProps(['fileLabel', 'nameLabel', 'fileErrorLabel', 'nameErrorLabel'])
   const emit = defineEmits(['submitted'])
   const form = ref(null)
 
